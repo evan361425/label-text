@@ -2,8 +2,11 @@ $(function () {
   let histories;
   let currentType = 'task';
   let historyIndex;
+  const loading =
+    '<div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div>';
   const selected = { task: {}, history: {} };
   const toast = new bootstrap.Toast($('#toast'), { autohide: false });
+  const stdout = new bootstrap.Toast($('#stdout'), { delay: 3000 });
 
   // get tag now!
   $.get('/tag', (res) => drawTag(res.tag), 'json');
@@ -11,27 +14,38 @@ $(function () {
   $('form').submit(function (ev) {
     ev.preventDefault();
 
-    const serviceIds = Object.values(selected[currentType]).map(
-      (el) => el.value
-    );
-    $('#tag').html(
-      '<div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div>'
-    );
+    const isTask = currentType === 'task';
+    const $el = $('#' + (isTask ? 'tag' : 'history'));
+    const id = $el.data('id');
+    const services = Object.values(selected[currentType]).map((el) => el.value);
+
+    $el.html(loading);
 
     $.post({
       url: '/answer',
-      data: JSON.stringify({ serviceIds }),
+      data: JSON.stringify({ id, services, type: currentType }),
       dataType: 'json',
       contentType: 'application/json',
       success: (res) => {
-        drawTag(res.tag);
+        if (!res.old) return;
 
-        resetSelected();
-        renderSelected();
+        if (isTask) {
+          drawTag(res.new);
+          historyIndex = histories.length;
+          histories.push(res.old);
+        } else {
+          histories[historyIndex] = res.old;
+          drawHistory(historyIndex);
+        }
+        stdout.show();
       },
     });
 
     return false;
+  });
+
+  $('#toast-hide').click(function () {
+    toast.hide();
   });
 
   $('#history-tab').one('show.bs.tab', function () {
@@ -86,6 +100,8 @@ $(function () {
         )
         .data('id', tag.id);
     }
+    resetSelected();
+    renderSelected();
   }
 
   function drawHistory(idx) {

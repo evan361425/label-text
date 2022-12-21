@@ -17,7 +17,15 @@ html
       .toast#toast(role="alert", aria-live="assertive", aria-atomic="true")
         .toast-header
           strong.me-auto 選擇服務
+          button.btn.btn-sm.btn-rounded#toast-hide(type="button")
+            i.bi.bi-dash
         .toast-body#toast-body
+    .toast-container.position-fixed.bottom-0.start-0.p-3
+      .toast#stdout(role="alert", aria-live="assertive", aria-atomic="true")
+        .toast-header.text-bg-success
+          strong.me-auto 執行結果
+          button.btn-close(type="button", data-bs-dismiss="toast", aria-label="Close")
+        .toast-body 成功！
 
     script
       include ./script.js
