@@ -1,0 +1,70 @@
+mixin services(prefix)
+  - let lastG1, lastG2;
+  for service in services
+    .h4= service.title
+
+    for group in service.groups
+      .h5= group.title
+      - for(let i = 0; i < group.items.length; i+=3) {
+        .row.px-5
+          +service(prefix, group.items[i])
+          +service(prefix, group.items[i+1])
+          +service(prefix, group.items[i+2])
+      - }
+mixin service(prefix, item)
+  if item
+    .col-lg-4.col-md-6.col-sm-12.form-check
+      .row
+        .col-9
+          input.form-check-input(
+            type="checkbox",
+            name="service",
+            data-name=item.name,
+            value=item.id,
+            id='#{prefix}-#{item.id}')
+          label.form-check-label.w-100(for='#{prefix}-#{item.id}') (#{item.id})#{item.name}
+        .col-3
+          a.text-decoration-none(
+            tabindex="0",
+            role="button",
+            data-bs-toggle="popover",
+            data-bs-trigger="focus",
+            data-bs-title=item.title,
+            data-bs-content=item.description)
+            i.bi.bi-info-circle
+
+
+ul.card-header.nav.nav-tabs.card-header-tabs.bg-transparent#nav(role="tablist")
+  li.nav-item(role="presentation")
+    button.nav-link.active#task-tab(data-bs-toggle="tab" data-bs-target="#task-pane" type="button" role="tab" aria-controls="task-pane" aria-selected="true") 設定
+  li.nav-item(role="presentation")
+    button.nav-link#history-tab(data-bs-toggle="tab" data-bs-target="#history-pane" type="button" role="tab" aria-controls="history-pane" aria-selected="false") 歷史紀錄
+form.tab-content.p-2
+  .tab-pane.fade.show.active#task-pane
+    .card-title.sticky-top
+      .alert.alert-primary.d-flex.justify-content-between
+        #tag
+          .spinner-border(role="status")
+            span.visually-hidden Loading...
+        button.btn.btn-success.btn-lg.align-self-center(type="submit") 送出
+
+    .card-body
+      .my-2
+        +services('task')
+
+
+  .tab-pane.fade#history-pane
+    .card-title.sticky-top
+      .alert.alert-primary.d-flex.justify-content-between
+        #history
+          .spinner-border(role="status")
+            span.visually-hidden Loading...
+        div
+          span.me-2#history-page
+          .btn-group.me-2
+            button.btn.btn-primary.btn-lg.align-self-center#history-prev(type="button") 上一個
+            button.btn.btn-primary.btn-lg.align-self-center#history-next(type="button") 下一個
+          button.btn.btn-success.btn-lg.align-self-center(type="submit") 送出
+    .card-body
+      .my-2 
+        +services('history')
