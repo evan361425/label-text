@@ -108,6 +108,7 @@ async function readTags() {
   });
 
   const tags = {};
+  const nameIdPairs = {};
   // always ignore first line
   for (const line of tagLines.slice(1)) {
     const [id, name, taxonomy_id, taxonomy_name] = line.split('\t');
@@ -116,10 +117,14 @@ async function readTags() {
     const tag = { id, name, taxonomy_id, taxonomy_name };
     if (histories[id]) {
       if (!histories[id].id) {
+        nameIdPairs[name] = id;
         histories[id] = { ...histories[id], ...tag };
       }
     } else if (!tags[id]) {
-      tags[id] = tag;
+      if (!nameIdPairs[name]) {
+        nameIdPairs[name] = id;
+        tags[id] = tag;
+      }
     }
   }
 

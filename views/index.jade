@@ -42,11 +42,12 @@ ul.card-header.nav.nav-tabs.card-header-tabs.bg-transparent#nav(role="tablist")
 form.tab-content.p-2
   .tab-pane.fade.show.active#task-pane
     .card-title.sticky-top
-      .alert.alert-primary.d-flex.justify-content-between
+      .alert.alert-primary.d-flex.justify-content-between.flex-sm-row.flex-column
         #tag
           .spinner-border(role="status")
             span.visually-hidden Loading...
-        button.btn.btn-success.btn-lg.align-self-center(type="submit") 送出
+        div.mt-2.mt-sm-0
+          button.btn.btn-success.btn-lg.align-self-center.mt-2.mt-sm-0(type="submit") 送出
 
     .card-body
       .my-2
@@ -55,11 +56,11 @@ form.tab-content.p-2
 
   .tab-pane.fade#history-pane
     .card-title.sticky-top
-      .alert.alert-primary.d-flex.justify-content-between
+      .alert.alert-primary.d-flex.justify-content-between.flex-sm-row.flex-column
         #history
           .spinner-border(role="status")
             span.visually-hidden Loading...
-        div
+        div.mt-2.mt-sm-0
           span.me-2#history-page
           .btn-group.me-2
             button.btn.btn-primary.btn-lg.align-self-center#history-prev(type="button") 上一個

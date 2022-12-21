@@ -68,7 +68,7 @@ $(function () {
   });
   $('#history-tab').on('show.bs.tab', () => {
     currentType = 'history';
-    renderSelected();
+    drawHistory(historyIndex);
   });
 
   $('[data-bs-toggle="popover"]').popover();
