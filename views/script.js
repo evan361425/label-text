@@ -88,6 +88,19 @@ $(function () {
     historyIndex < histories.length && drawHistory(++historyIndex);
   });
 
+  document.addEventListener('keydown', (event) => {
+    switch (event.code) {
+      case 'ArrowLeft':
+        historyIndex > 0 && drawHistory(--historyIndex);
+        break;
+      case 'ArrowRight':
+        historyIndex < histories.length && drawHistory(++historyIndex);
+        break;
+      default:
+        break;
+    }
+  });
+
   function drawTag(tag) {
     if (!tag) {
       $('#tag').html('').data('id', '');
