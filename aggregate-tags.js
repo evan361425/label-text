@@ -7,19 +7,19 @@ fs.writeFileSync(output, '');
 
 const tags = {};
 const tagNameIdPairs = {};
-const parents = {};
+const relationships = {};
 for (const line of tagsLines.slice(1)) {
   if (!line) continue;
   let [id, name] = line.split('\t');
   if (!id || !name || tags[id]) continue;
 
-  if (name.startsWith('人資市集──')) {
-    name = name.substring(6);
+  if (name.includes('──')) {
+    name = name.split('──')[1];
   }
 
-  // 如果名稱一樣，記錄在 `parents`
+  // 如果名稱一樣，記錄在 `relationships`
   if (tagNameIdPairs[name]) {
-    parents[id] = tagNameIdPairs[name];
+    relationships[id] = tagNameIdPairs[name];
     continue;
   }
 
@@ -30,22 +30,40 @@ for (const line of tagsLines.slice(1)) {
 const answers = {};
 for (const line of answerLines) {
   const [id, answer] = line.split('\t');
+  if (!id) continue;
 
-  if (tags[id]) {
-    answers[id] = { ...tags[id], answer, others: [] };
-  } else if (tags[parents[id] ?? '']) {
-    const parentId = parents[id];
-    if (!answers[parentId]) {
-      answers[parentId] = { ...tags[parentId], answer, others: [] };
+  const exist = !!tags[id];
+  let usedId = id;
+  if (!exist) {
+    if (relationships[id] && tags[relationships[id]]) {
+      usedId = relationships[id];
     } else {
-      answers[parentId].others.push(answer);
+      console.log(`WARN! not found ${id} tag with ${answer}`);
+      continue;
     }
+  }
+
+  if (!answers[usedId]) {
+    answers[usedId] = {
+      ...tags[usedId],
+      answer,
+      others: [],
+      children: exist ? [] : [id],
+    };
+  } else {
+    answers[usedId].others.push(answer);
+    exist || answers[usedId].children.push(id);
   }
 }
 
 for (const tag of Object.values(answers)) {
   const others = [tag.answer, ...tag.others].map((e) => e.split(',')).flat();
   const final = [...new Set(others)].join(',');
-  const v = [tag.id, tag.name, final].join('\t');
+  const v = [
+    tag.id,
+    tag.name.replace(/ /g, ''),
+    final,
+    tag.children.join(','),
+  ].join('\t');
   fs.appendFileSync(output, v + '\n');
 }
